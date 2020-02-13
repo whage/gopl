@@ -1,8 +1,9 @@
-package main
+package surface
 
 import (
 	"fmt"
 	"math"
+	"io"
 	//"os"
 )
 
@@ -68,7 +69,7 @@ func (q *Quad3D) ProjectTo2D() Quad2D {
 	}
 }
 
-func main() {
+func Draw(w io.Writer) {
 	var minZ float64 = 0
 	var maxZ float64 = 0
 
@@ -96,8 +97,8 @@ func main() {
 		}
 	}
 
-	fmt.Printf("<svg xmlns='http://www.w3.org/2000/svg' "+
-		"style='stroke: grey; fill: white; stroke-width:0.7' "+
+	fmt.Fprintf(w, "<svg xmlns='http://www.w3.org/2000/svg' "+
+		"style='stroke: grey; fill: white; stroke-width:0.7;' "+
 		"width='%d' height='%d'>", width, height)
 
 	for _, q := range polygons {	
@@ -105,11 +106,11 @@ func main() {
 		blueComponent := getBlueComponentAt(q.GetAverageHeight(), minZ, maxZ)	
 		p := q.ProjectTo2D()
 
-		fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g' style='fill: #%02x00%02x';/>\n", p.A.X, p.A.Y, p.B.X, p.B.Y, p.C.X, p.C.Y, p.D.X, p.D.Y, redComponent, blueComponent)
+		fmt.Fprintf(w, "<polygon points='%g,%g %g,%g %g,%g %g,%g' style='fill: #%02x00%02x;'/>\n", p.A.X, p.A.Y, p.B.X, p.B.Y, p.C.X, p.C.Y, p.D.X, p.D.Y, redComponent, blueComponent)
 	}
 
-	fmt.Println("</svg>")
-	fmt.Printf("<p>Z range: %f -> %f</p>", minZ, maxZ)
+	fmt.Fprintf(w, "</svg>")
+	//fmt.Fprintf(w, "<p>Z range: %f -> %f</p>", minZ, maxZ)
 }
 
 func getRedComponentAt(z, minZ, maxZ float64) int {
